@@ -19,7 +19,7 @@ import org.apache.http.client.ClientProtocolException
 import java.io.UnsupportedEncodingException
 import java.io.IOException
 import android.util.Log
-
+import scala.util.parsing.json.JSON._
 /**
  * Background task for checking remotely whether a number is prime.
  * Expects at the given URL a suitable cloud service such as an instance of
@@ -35,7 +35,6 @@ class RemoteTask(textview: TextView)
   private var result: String = null
   var is: InputStream = null
   var json: String = ""
-  val jsonP = new JSONParser()
   var download: String = "empty"
 
   override protected def onPreExecute() {
@@ -87,10 +86,12 @@ class RemoteTask(textview: TextView)
 
   override protected def onPostExecute(result: Boolean) {
 
+   
+    val jsonParsed =parseFull(this.result).get
     //    if (result) textview.setText(this.result)
-    if (result) textview.setText(this.result)
-
-    else textview.setText("Failed")
+    if (result) textview.setText(jsonParsed.toString())
+    
+    else textview.setText("Failed")	
 
   }
 
