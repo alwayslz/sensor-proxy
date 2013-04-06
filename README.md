@@ -1,4 +1,4 @@
-sensor-proxy
+sensor-proxy-client-scala
 ============
 
-sensor-proxy
+server:http://pervasive-dev.cs.luc.edu:8080/sensor-proxy-restful/
