@@ -1,5 +1,5 @@
 package cs.luc.edu
-
+import spray.json._
 import java.net.URL
 import org.apache.http.HttpResponse
 import org.apache.http.client.HttpClient
@@ -20,6 +20,8 @@ import java.io.UnsupportedEncodingException
 import java.io.IOException
 import android.util.Log
 import scala.util.parsing.json.JSON._
+import scala.xml.Null
+import spray.json.DefaultJsonProtocol._
 /**
  * Background task for checking remotely whether a number is prime.
  * Expects at the given URL a suitable cloud service such as an instance of
@@ -32,12 +34,10 @@ class RemoteTask(textview: TextView)
   extends AsyncTask[AnyRef, Void, Boolean] {
 
   private var request: HttpGet = null
-  private var result: String = null
+  private var result: String = ""
   var is: InputStream = null
   var json: String = ""
-  var download: String = "empty"
-
-  override protected def onPreExecute() {
+ override protected def onPreExecute() {
   }
 
   override protected def doInBackground(params: AnyRef*): Boolean = {
@@ -48,9 +48,9 @@ class RemoteTask(textview: TextView)
     request.setHeader("Accept", "application/json")
     val httpResponse: HttpResponse = httpClient.execute(request)
     val httpEntity: HttpEntity = httpResponse.getEntity()
-    //      is = httpEntity.getContent()
     val status = httpResponse.getStatusLine.getStatusCode
     result = EntityUtils.toString(httpEntity)
+
     if (status == 200)
       true
     else if (status == 404)
@@ -58,40 +58,20 @@ class RemoteTask(textview: TextView)
     else
       throw new RuntimeException("unexpected server response")
 
-//    try {
-//
-//    } catch {
-//      case e: UnsupportedEncodingException => e.printStackTrace()
-//      case e1: ClientProtocolException => e1.printStackTrace()
-//      case e2: IOException => e2.printStackTrace()
-//    }
-//
-//    try {
-//
-//      val reader: BufferedReader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8)
-//      val sb: StringBuilder = new StringBuilder()
-//      val line: String = null
-//
-//      val iterator = Iterator.continually(sb.append(reader.readLine())).takeWhile(_ != null)
-//
-//      is.close()
-//      json = sb.toString()
-//      Log.e("reader", json)
-//    } catch {
-//      case e: Exception => e.printStackTrace()
-//    }
-
-
   }
 
-  override protected def onPostExecute(result: Boolean) {
 
-   
-    val jsonParsed =parseFull(this.result).get
-    //    if (result) textview.setText(this.result)
-    if (result) textview.setText(jsonParsed.toString())
-    
-    else textview.setText("Failed")	
+override protected def onPostExecute(result: Boolean) {
+
+    if (result) {
+      
+////////////////////I am here/////////////      
+      val jsonParsed = JsonParser(this.result).toString
+////////////////////I am here/////////////      
+
+//      val jsonParsed = parseFull(this.result).get
+      textview.setText(jsonParsed.toString)
+    } else textview.setText("Failed")
 
   }
 
