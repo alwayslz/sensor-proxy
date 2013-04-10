@@ -39,11 +39,7 @@ object General {
 
 resolvers += "spray repo" at "http://repo.spray.io",
 
-      libraryDependencies ++= Seq("org.scalatest" %% "scalatest" % "1.9.1" % "test","io.spray"            %   "spray-can"     % "1.1-M7",
-  "io.spray"            %   "spray-routing" % "1.1-M7",
-  "io.spray"            %   "spray-testkit" % "1.1-M7",
-  "com.typesafe.akka"   %%  "akka-actor"    % "2.1.0",
-  "org.specs2"          %%  "specs2"        % "1.13" % "test",
+      libraryDependencies ++= Seq("org.scalatest" %% "scalatest" % "1.9.1" % "test",
 "io.spray" %%  "spray-json" % "1.2.3"))
 }
 

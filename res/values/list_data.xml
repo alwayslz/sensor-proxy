@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+    <resources>
+        <string-array name="operation">
+            <item >Get</item>
+            <item >Post</item>
+            <item >Put</item>
+            <item >Delete</item>
+        </string-array>
+    </resources>

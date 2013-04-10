@@ -22,6 +22,13 @@ import android.util.Log
 import scala.util.parsing.json.JSON._
 import scala.xml.Null
 import spray.json.DefaultJsonProtocol._
+import org.xml.sax.InputSource
+import javax.xml.parsers.ParserConfigurationException
+import javax.xml.parsers.DocumentBuilder
+import javax.xml.parsers.DocumentBuilderFactory
+import org.w3c.dom.Document
+import java.io.StringReader
+import org.xml.sax.SAXException
 /**
  * Background task for checking remotely whether a number is prime.
  * Expects at the given URL a suitable cloud service such as an instance of
@@ -37,40 +44,57 @@ class RemoteTask(textview: TextView)
   private var result: String = ""
   var is: InputStream = null
   var json: String = ""
- override protected def onPreExecute() {
+  override protected def onPreExecute() {
   }
 
   override protected def doInBackground(params: AnyRef*): Boolean = {
-    require { params.length == 1 }
+    require { params.length <= 3 }
     val url = params(0).asInstanceOf[URL]
+    lazy val requestOperation = params(1).asInstanceOf[String]
+    lazy val configuration = params(2).asInstanceOf[String]
+
     val httpClient: DefaultHttpClient = new DefaultHttpClient()
+    //    if (requestOperation == "get") {
     val request: HttpGet = new HttpGet(url.toString())
-    request.setHeader("Accept", "application/json")
+    //    }
+    val configurationArray = configuration.split(":")
+    //        request.setHeader("Accept", "application/xhtml+xml")
+    request.setHeader(configurationArray(0), configurationArray(1))
     val httpResponse: HttpResponse = httpClient.execute(request)
     val httpEntity: HttpEntity = httpResponse.getEntity()
     val status = httpResponse.getStatusLine.getStatusCode
     result = EntityUtils.toString(httpEntity)
-
+//    if (configurationArray(1) == "xml") {
+//      try{
+//      var doc: Document = null;
+//      val dbf: DocumentBuilderFactory = DocumentBuilderFactory.newInstance();
+//      val db: DocumentBuilder = dbf.newDocumentBuilder();
+//      val is: InputSource = new InputSource()
+//      is.setCharacterStream(new StringReader(result))
+//      doc = db.parse(is)}catch{
+//        case e:ParserConfigurationException => e.printStackTrace()
+//        case e:SAXException => e.printStackTrace()
+//        case e:IOException => e.printStackTrace()
+//      }
+//
+//    }
     if (status == 200)
       true
     else if (status == 404)
       false
     else
-      throw new RuntimeException("unexpected server response")
+      throw new RuntimeException("unexpected server response. status: "+status)
 
   }
 
-
-override protected def onPostExecute(result: Boolean) {
+  override protected def onPostExecute(result: Boolean) {
 
     if (result) {
-      
-////////////////////I am here/////////////      
-      val jsonParsed = JsonParser(this.result).toString
-////////////////////I am here/////////////      
+      textview.setText(this.result)
+      //val jsonParsed = JsonParser(this.result).toString
 
-//      val jsonParsed = parseFull(this.result).get
-      textview.setText(jsonParsed.toString)
+      //      val jsonParsed = parseFull(this.result).get
+      //      textview.setText(jsonParsed.toString)
     } else textview.setText("Failed")
 
   }
